@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Amor</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #ffecf0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .sobre {
+            position: relative;
+            width: 200px;
+            height: 150px;
+            margin: auto;
+            cursor: pointer;
+        }
+        .sobre img {
+            width: 100%;
+        }
+        .carta {
+            display: none;
+            width: 80%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .pregunta {
+            display: none;
+            margin-top: 20px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .si { background-color: #ff4d79; color: white; }
+        .no { background-color: #cccccc; color: black; }
+        .flores {
+            position: absolute;
+            width: 100px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        #fireworks {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Para mi amor Gidalthy 💕</h1>
+    
+    <div class="container">
+        <div class="sobre" onclick="abrirCarta()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Closed_Envelope.svg/200px-Closed_Envelope.svg.png" alt="Sobre cerrado">
+        </div>
+
+        <div class="carta" id="carta">
+            <img class="flores" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Red_Rose_Flower.svg/200px-Red_Rose_Flower.svg.png" alt="Flores">
+            <p>Mi amor, eres la persona más increíble del mundo y quiero que este 14 de febrero lo celebremos juntos.</p>
+            <div class="pregunta">
+                <h2>¿Quieres ser mi San Valentín? 💖</h2>
+                <button class="si" onclick="mostrarFuegos()">¡Sí!</button>
+                <button class="no" onmouseover="moverBoton(this)">No...</button>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        function abrirCarta() {
+            document.getElementById('carta').style.display = 'block';
+            document.querySelector('.pregunta').style.display = 'block';
+        }
+
+        function moverBoton(btn) {
+            let x = Math.random() * (window.innerWidth - 150);
+            let y = Math.random() * (window.innerHeight - 150);
+            btn.style.position = "absolute";
+            btn.style.left = x + "px";
+            btn.style.top = y + "px";
+        }
+
+        function mostrarFuegos() {
+            document.getElementById('fireworks').style.display = 'block';
+            iniciarFuegos();
+        }
+
+        function iniciarFuegos() {
+            const canvas = document.getElementById("fireworks");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let fireworks = [];
+
+            function Firework(x, y) {
+                this.x = x;
+                this.y = y;
+                this.exploded = false;
+                this.particles = [];
+
+                this.explode = function() {
+                    for (let i = 0; i < 30; i++) {
+                        this.particles.push(new Particle(this.x, this.y));
+                    }
+                    this.exploded = true;
+                };
+            }
+
+            function Particle(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = (Math.random() - 0.5) * 5;
+                this.speedY = (Math.random() - 0.5) * 5;
+                this.alpha = 1;
+            }
+
+            function animate() {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    let firework = fireworks[i];
+                    if (!firework.exploded) {
+                        firework.explode();
+                    } else {
+                        for (let j = firework.particles.length - 1; j >= 0; j--) {
+                            let p = firework.particles[j];
+                            p.x += p.speedX;
+                            p.y += p.speedY;
+                            p.alpha -= 0.02;
+                            ctx.fillStyle = `rgba(255, ${Math.random() * 255}, 0, ${p.alpha})`;
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                            ctx.fill();
+
+                            if (p.alpha <= 0) {
+                                firework.particles.splice(j, 1);
+                            }
+                        }
+
+                        if (firework.particles.length === 0) {
+                            fireworks.splice(i, 1);
+                        }
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            setInterval(() => {
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * (canvas.height / 2);
+                fireworks.push(new Firework(x, y));
+            }, 1000);
+
+            animate();
+        }
+    </script>
+
+</body>
+</html>
